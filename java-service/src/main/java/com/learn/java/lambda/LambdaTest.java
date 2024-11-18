@@ -1,4 +1,4 @@
-package com.learn.java.feats;
+package com.learn.java.lambda;
 
 
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
-package com.learn.java.feats;
+package com.learn.java.lambda;
 
 import lombok.NoArgsConstructor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 public class InnerClassTest {

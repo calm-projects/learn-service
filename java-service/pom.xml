@@ -20,10 +20,19 @@
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
         </dependency>
-        <dependency>
+        <!-- JUnit4单元测试框架 -->
+        <!--<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
+            <scope>compile</scope>
+        </dependency>-->
+        <!-- JUnit5单元测试框架 scope 设置为compile，我代码没有写在test下 -->
+        <!-- 参考：https://junit.org/junit5/docs/current/user-guide/#overview -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.11.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
