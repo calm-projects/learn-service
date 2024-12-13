@@ -12,6 +12,17 @@ import java.util.regex.Pattern;
 @Slf4j
 public class RegularTest {
 
+
+    /**
+     * java 中忽略大小写可以使用(?i),(?i)后面的内容都可以忽略大小写
+     */
+    @Test
+    public void testCaseInsensitive(){
+        Pattern compile = Pattern.compile("AAA (?i)Country Name");
+        Matcher matcher = compile.matcher("aaa country name");
+        log.info("group:{}", matcher.find() ? matcher.group() : "不匹配");
+    }
+
     @Test
     public void test() {
         String target = "a\nb\nc";
