@@ -1,4 +1,4 @@
-package com.learn.java.jvm;
+package com.learn.java.jvm.chapter2;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

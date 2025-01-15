@@ -1,4 +1,4 @@
-package com.learn.java.jvm;
+package com.learn.java.jvm.chapter2;
 
 /**
  * 定义了大量的本地变量，增大此方法帧中本地变量表的长度。

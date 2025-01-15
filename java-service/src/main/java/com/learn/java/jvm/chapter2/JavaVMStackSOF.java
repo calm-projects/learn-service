@@ -1,4 +1,4 @@
-package com.learn.java.jvm;
+package com.learn.java.jvm.chapter2;
 
 /**
  * -Xss180k

@@ -1,4 +1,4 @@
-package com.learn.java.jvm;
+package com.learn.java.jvm.chapter2;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -11,7 +11,7 @@ public class RuntimeConstantPoolOOM {
 
     /**
      * JDK6测试永久代：-XX:PermSize=6M -XX:MaxPermSize=6M
-     * JD7和JDK8 字符串常量被存在java heap了 -Xms1m -Xmx1m
+     * JD7和JDK8以上 字符串常量被存在java heap了 -Xms1m -Xmx1m
      */
     @Test
     public void test_perm() {

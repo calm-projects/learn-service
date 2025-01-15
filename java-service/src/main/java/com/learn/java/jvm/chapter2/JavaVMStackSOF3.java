@@ -1,4 +1,4 @@
-package com.learn.java.jvm;
+package com.learn.java.jvm.chapter2;
 
 /**
  * 通过定义多个线程，每个线程会消耗一个stack frame内存，当内存耗尽时，也会内存溢出。
