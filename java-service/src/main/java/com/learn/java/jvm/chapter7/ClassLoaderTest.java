@@ -36,6 +36,6 @@ public class ClassLoaderTest {
             个Class文件，但在Java虚拟机中仍然是两个互相独立的类，做对象所属类型检查时的结果自然为
             false。
          */
-        System.out.println(obj instanceof com.learn.java.jvm.chapter7.ClassLoaderTest);
+        System.out.println(obj instanceof ClassLoaderTest);
     }
 }
