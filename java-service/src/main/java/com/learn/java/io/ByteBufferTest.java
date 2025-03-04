@@ -4,9 +4,23 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.CharBuffer;
 import java.nio.LongBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class ByteBufferTest {
+
+    @Test
+    public void test_chart() {
+        // 遗留
+        // ByteBuffer buffer2 = Charset.forName("utf-8").encode("你好");
+        ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode("你好");
+        // [pos=0 lim=6 cap=11]
+        System.out.println(byteBuffer);
+        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
+        // 你好
+        System.out.println(charBuffer);
+    }
 
     @Test
     public void test_getInt() {
