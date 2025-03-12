@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
 
 @Slf4j
-public class PipeDemo {
+public class PipeTest {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // 创建一个管道

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.util.stream.Collectors;
 
-public class IOTest {
+public class OldIOTest {
 
     final String FILENAME = "src/main/java/com/learn/java/nio/IOTest.java";
 

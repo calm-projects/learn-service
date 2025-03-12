@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-public class SocketTest {
+public class SocketChannelTest {
 
     private static final String HOST = "localhost";
     private static final int PORT = 8888;

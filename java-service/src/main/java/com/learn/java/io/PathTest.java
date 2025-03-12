@@ -3,7 +3,7 @@ package com.learn.java.io;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class PathExample {
+public class PathTest {
     public static void main(String[] args) {
         // 创建 Path 对象
         Path path = Paths.get("example.txt");

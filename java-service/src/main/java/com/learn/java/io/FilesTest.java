@@ -6,7 +6,7 @@ import java.nio.file.*;
 import java.io.IOException;
 
 @Slf4j
-public class FilesExample {
+public class FilesTest {
     public static void main(String[] args) {
         Path source = Paths.get("source.txt");
         Path target = Paths.get("target.txt");

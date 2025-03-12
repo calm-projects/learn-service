@@ -8,7 +8,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-public class ChannelsDemo {
+public class ChannelsTest {
 
     public static void main(String[] args) throws IOException {
         // Step 1: Create input stream and convert it to a ReadableByteChannel

@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 @Slf4j
-public class ChannelTest {
+public class FileChannelTest {
 
     @Test
     public void test_FileChannel() {
