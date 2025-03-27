@@ -1,0 +1,5 @@
+uat-url: http://xxx/from/application
+
+logging:
+  level:
+    root: info
