@@ -1,5 +1,9 @@
 uat-url: http://xxx/from/application
-
+spring:
+  application:
+    name: application
+  profiles:
+    active: prod
 logging:
   level:
     root: info
