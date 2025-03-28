@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: springboot3-service
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool:
+        size: 2
+    execution:
+      pool:
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: "10s"
+
+name: jack
+
+
