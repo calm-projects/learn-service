@@ -1,5 +1,7 @@
 package com.learn.java.springboot3service;
 
+import com.learn.java.springboot3service.component.CircularDeptA;
+import com.learn.java.springboot3service.component.CircularDeptB;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,5 +26,10 @@ public class Springboot3ServiceApplication {
         ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
         ThreadPoolTaskScheduler taskScheduler = (ThreadPoolTaskScheduler) context.getBean("taskScheduler");
         System.out.println(111111);
+
+        CircularDeptA circularDeptA = context.getBean(CircularDeptA.class);
+        circularDeptA.idCircularDeptB();
+        CircularDeptB circularDeptB = context.getBean(CircularDeptB.class);
+        System.out.println(circularDeptB);
     }
 }
