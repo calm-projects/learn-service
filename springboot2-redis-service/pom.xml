@@ -35,9 +35,20 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>-->
         <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.3.2.RELEASE</version> <!-- Check for the latest version on Maven Central -->
+        </dependency>
+        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>5.2.0</version>
+        </dependency>
+        <!--jedis pooled config need-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
