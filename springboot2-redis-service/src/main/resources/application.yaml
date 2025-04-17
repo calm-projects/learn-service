@@ -1,7 +1,92 @@
+# redisson 可以使用springboot里面的某些公共配置,但是如果redisson也配置了则会覆盖springboot的配置,
+# 例如下面我们可以只配置springboot的配置也是可以的.
 spring:
   redis:
     host: localhost
     port: 6379
     database: 0
-    username:
-    password:
+    timeout: 5000ms
+    redisson:
+      config: |
+        singleServerConfig:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          password: null
+          subscriptionsPerConnection: 5
+          clientName: null
+          address: "redis://127.0.0.1:6379"
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 24
+          connectionPoolSize: 64
+          database: 0
+          dnsMonitoringInterval: 5000
+        threads: 16
+        nettyThreads: 32
+        codec: !<org.redisson.codec.Kryo5Codec> { }
+        transportMode: "NIO"
+
+
+# spring boot starer redis standalone config
+#spring:
+#  redis:
+#    host: localhost
+#    port: 6379
+#    database: 0
+#    password:
+#    timeout: 5000ms
+#    lettuce:
+#      pool:
+#        max-active: 8  # 最大连接数
+#        max-idle: 8  # 最大空闲连接
+#        # 最小空闲连接，预热机制，如果池中空闲连接数 < minIdle，会尝试新建连接补足。是配合后台线程维持池的活跃度。
+#        # 只有timeBetweenEvictionRuns（默认空）和min-idle（默认0）都为正值时才激活
+#        # 连接不是启动应用就创建，而是lazy模式，请求的时候才创建连接，此时，如果time-between-eviction-runs为正数则补足min-idle
+#        # 可以通过redis-cli info clients 验证，mysql也可以查看连接数哦
+#        min-idle: 0
+#        max-wait: 3000ms
+#        # 没有默认值，也就是说我们不配置此配置min-idle是无效的，
+#        # time-between-eviction-runs: 30s
+#    redisson:
+#      config: |
+#        singleServerConfig:
+#          idleConnectionTimeout: 10000
+#          connectTimeout: 10000
+#          timeout: 3000
+#          retryAttempts: 3
+#          retryInterval: 1500
+#          password: null
+#          subscriptionsPerConnection: 5
+#          clientName: null
+#          address: "redis://127.0.0.1:6379"
+#          subscriptionConnectionMinimumIdleSize: 1
+#          subscriptionConnectionPoolSize: 50
+#          connectionMinimumIdleSize: 24
+#          connectionPoolSize: 64
+#          database: 0
+#          dnsMonitoringInterval: 5000
+#        threads: 16
+#        nettyThreads: 32
+#        codec: !<org.redisson.codec.Kryo5Codec> { }
+#        transportMode: "NIO"
+
+# spring boot starer redis cluster config
+#spring:
+#  redis:
+#    cluster:
+#      nodes:
+#        - 192.168.1.101:6379
+#        - 192.168.1.102:6379
+#        - 192.168.1.103:6379
+#      max-redirects: 3  # 最大重定向次数（集群 slot 映射找不到时）
+#    password: yourpassword
+#    timeout: 5000ms
+#    lettuce:
+#      pool:
+#        max-active: 8
+#        max-idle: 8
+#        min-idle: 0
+#        max-wait: 3000ms
