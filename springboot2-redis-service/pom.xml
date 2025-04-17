@@ -35,7 +35,10 @@
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.4</version>
         </dependency>
-        <!--redisson-->
+        <!--redisson 引入redisson，spring-boot-starter-data-redis jedis lettuce 都需要引入了，
+            redisson的自动配置强制使用的自己的连接工厂，也就是redisson client，可以看下自动配置类就知道了
+            我们这里只是测试，注释掉相关pom后，写的测试代码会报错，所以这里引入的东西比较杂乱，但是自己应该知道这几个包的区别以及引入逻辑
+        -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
