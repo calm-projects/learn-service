@@ -44,8 +44,8 @@ public class WordCountDriver {
         // CombineTextInputFormat.setMaxInputSplitSize(job, 20971520);
 
 
-        // 6 设置输入路径和输出路径
-        FileInputFormat.setInputPaths(job, Paths.SMALL_FILE.gets());
+        // 6 设置输入路径和输出路径, window 执行报错，应该是hadoop env 有问题，mac不需要环境
+        FileInputFormat.setInputPaths(job, Paths.SMALL_FILE.get());
         FileOutputFormat.setOutputPath(job, Paths.OUTPUT.get());
 
         // 7 提交job

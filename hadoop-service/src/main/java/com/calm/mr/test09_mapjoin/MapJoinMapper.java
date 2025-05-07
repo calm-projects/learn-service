@@ -14,14 +14,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class MapJoinMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
-    private HashMap<String, String> pdMap = new HashMap<>();
-    private Text outK = new Text();
+    private final HashMap<String, String> pdMap = new HashMap<>();
+    private final Text outK = new Text();
 
     @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
+    protected void setup(Context context) throws IOException {
         // 获取缓存的文件，并把文件内容封装到集合 pd.txt
         URI[] cacheFiles = context.getCacheFiles();
 
@@ -29,36 +30,21 @@ public class MapJoinMapper extends Mapper<LongWritable, Text, Text, NullWritable
         FSDataInputStream fis = fs.open(new Path(cacheFiles[0]));
 
         // 从流中读取数据
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
 
         String line;
         while (StringUtils.isNotEmpty(line = reader.readLine())) {
-            // 切割
             String[] fields = line.split("\t");
-
-            // 赋值
             pdMap.put(fields[0], fields[1]);
         }
-
-        // 关流
         IOUtils.closeStream(reader);
     }
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-
-        // 处理 order.txt
-        String line = value.toString();
-
-        String[] fields = line.split("\t");
-
-        // 获取pid
+        String[] fields = value.toString().split("\t");
         String pname = pdMap.get(fields[1]);
-
-        // 获取订单id 和订单数量
-        // 封装
         outK.set(fields[0] + "\t" + pname + "\t" + fields[2]);
-
         context.write(outK, NullWritable.get());
     }
 }
