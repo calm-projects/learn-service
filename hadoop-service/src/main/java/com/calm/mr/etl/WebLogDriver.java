@@ -1,6 +1,6 @@
 package com.calm.mr.etl;
 
-import com.calm.mr.outputformat.LogDriver;
+import com.calm.mr.test07_outputFormat.LogDriver;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
