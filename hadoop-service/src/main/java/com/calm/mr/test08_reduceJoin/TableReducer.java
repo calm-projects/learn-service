@@ -17,6 +17,7 @@ public class TableReducer extends Reducer<Text, TableBean, TableBean, NullWritab
         TableBean pdBean = new TableBean();
         for (TableBean value : values) {
             if ("order".equals(value.getFlag())) {
+                // 这里为什么直接添加value？是因为hadoop做的优化每一个value都是同一个地址
                 TableBean entity = new TableBean().setId(value.getId()).setPid(value.getPid())
                         .setPname(value.getPname()).setAmount(value.getAmount()).setFlag(value.getFlag());
                 orderBeans.add(entity);

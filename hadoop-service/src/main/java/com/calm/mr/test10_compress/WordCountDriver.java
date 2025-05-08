@@ -6,6 +6,7 @@ import com.calm.mr.test01_wordcount.WordCountReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.io.compress.SnappyCodec;
@@ -21,8 +22,8 @@ public class WordCountDriver {
         Configuration conf = new Configuration();
         // 开启map端输出压缩
         conf.setBoolean("mapreduce.map.output.compress", true);
-        // 设置map端输出压缩方式
-        conf.setClass("mapreduce.map.output.compress.codec", SnappyCodec.class, CompressionCodec.class);
+        // 设置map端输出压缩方式， Snappy在unix系统测试，window本地库不支持，如果获取Bzip库失败则直接使用默认模式
+        conf.setClass("mapreduce.map.output.compress.codec", BZip2Codec.class, CompressionCodec.class);
         Job job = Job.getInstance(conf);
 
         job.setJarByClass(WordCountDriver.class);
