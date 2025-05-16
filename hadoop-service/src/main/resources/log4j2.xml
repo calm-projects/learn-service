@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- monitorInterval="30" 30秒检测一次配置文件 最小值为5-->
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="baseDir">logs-file</Property>
+        <Property name="fileSize">10 KB</Property>
+        <Property name="layoutPattern">%d{yyyy-MM-dd HH:mm:ss} [%t] %p %c{1}-[%L] - %m%n</Property>
+    </Properties>
+    <!-- 打印到控制台 -->
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 2022-06-29 13:34:33 [main] ERROR Log4j2ConfigTest-[21] - tom old age 18, tom new age28 -->
+            <PatternLayout pattern="${layoutPattern}"/>
+        </Console>
+
+        <!-- RollingFile配置同时指定了基于时间和大小的触发规则，将会一天最多创建 100 个归档文件（
+            未配置 DefaultRolloverStrategy 时，其 max 属性默认为 7），
+            存放在当前年月目录下，每个归档文件使用 gzip 进行压缩,
+            达到或超过 60 天的文件将会在滚动时删除。-->
+        <!-- filePattern 归档日志文件的文件名模式（pattern）。 -%i 这个参数一定要带着不然只会生成一个文件 -->
+        <RollingFile name="RollingFile" fileName="${baseDir}/app.log"
+                     filePattern="${baseDir}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>${layoutPattern}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <!-- min 日志归档文件名称从10开始到100结束，当达到100的时候会对最原始的数据覆盖，但是日志打印的顺序以及文件顺序还是升序的-->
+            <!-- 我即便注释掉这里也会进行文件压缩，说明日志压缩不是这里控制-->
+            <DefaultRolloverStrategy min= "10"  max="100">
+                <Delete basePath="${baseDir}" maxDepth="2">
+                    <!-- 判断文件的文件名是否满足正则表达式或glob表达式 -->
+                    <IfFileName glob="*/app-*.log.gz" />
+                    <!-- 判断文件的修改时间是否早于指定的duration -->
+                    <IfLastModified age="60d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <!-- 设置应用那些appender-->
+    <Loggers>
+        <!-- 使用此配置，将记录来自Log4j2Test的所有日志事件，而仅记录来自所有其他组件的错误事件。
+         additivity="false" 如果使用了这种方式需要添加这个属性，否则会打2次日志信息
+         -->
+        <!--<Logger name="Log4j2Test" level="trace" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>-->
+        <!-- 设置打印级别 -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
