@@ -54,7 +54,7 @@ public class Test03_ProducerConsumerTransaction {
                     );
                     producer.send(record);
                 }
-                producer.abortTransaction();
+                producer.commitTransaction();
             } catch (KafkaException e) {
                 producer.abortTransaction();
                 log.error("事务回滚: ", e);
@@ -113,6 +113,9 @@ public class Test03_ProducerConsumerTransaction {
     }
 
 
+    /**
+     * 这里只是利用了Producer的事务，Producer可以不发送数据
+     */
     @Test
     void testProductConsumerWithTransaction() {
         // 消费者配置
@@ -131,7 +134,7 @@ public class Test03_ProducerConsumerTransaction {
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "hadoop02:9092,hadoop03:9092");
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        producerProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "my-tx-id");
+        producerProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "my-tx-id-test2");
         producerProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
         producerProps.put(ProducerConfig.ACKS_CONFIG, "all");
 
@@ -151,7 +154,7 @@ public class Test03_ProducerConsumerTransaction {
 
                         for (ConsumerRecord<String, String> record : records) {
                             log.info("消费内容:{}", record);
-                            producer.send(new ProducerRecord<>("test2", record.key(), record.value()));
+                            // producer.send(new ProducerRecord<>("test2", record.key(), record.value()));
                         }
 
                         // 事务性提交偏移量（与生产操作绑定在同一事务）,利用生产者事务提交消费者偏移量
