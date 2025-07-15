@@ -35,6 +35,10 @@ public class ThreadLocalTest {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }finally{
+                // 线程经常被复用，尤其是在线程池的情况下，如果不回收会造成内存泄漏，
+                // 以及可能会影响后续的其他流程。
+                userThreadLocal.remove();
             }
             System.out.println(Thread.currentThread().getName() + " finished handling request for: " + userThreadLocal.get());
         }
