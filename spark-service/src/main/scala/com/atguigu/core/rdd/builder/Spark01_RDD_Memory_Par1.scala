@@ -11,6 +11,15 @@ object Spark01_RDD_Memory_Par1 {
         val sc = new SparkContext(sparkConf)
 
         // TODO 创建RDD
+        /*
+          TODO 内存数据分配源码
+          看下数据是如何分配的，直接看下源码
+          (0 until numSlices).iterator.map { i =>
+               val start = ((i * length) / numSlices).toInt
+               val end = (((i + 1) * length) / numSlices).toInt
+               (start, end)
+          }
+         */
 
         // 【1，2】，【3，4】
         //val rdd = sc.makeRDD(List(1,2,3,4), 2)
