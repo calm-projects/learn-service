@@ -20,15 +20,17 @@ public class SlotSharingGroupDemo {
 //        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // IDEA运行时，也可以看到webui，一般用于本地测试
         // 需要引入一个依赖 flink-runtime-web
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+        Configuration configuration = new Configuration();
+        configuration.setInteger("taskmanager.numberOfTaskSlots", 4); // 设置 slot 数为 4
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration);
 
         // 在idea运行，不指定并行度，默认就是 电脑的 线程数
-        env.setParallelism(1);
+        env.setParallelism(2);
 
 
 
         // TODO 2. 读取数据： socket
-        DataStreamSource<String> socketDS = env.socketTextStream("hadoop102", 7777);
+        DataStreamSource<String> socketDS = env.socketTextStream("hadoop03", 7777);
 
         // TODO 3. 处理数据: 切换、转换、分组、聚合
         SingleOutputStreamOperator<Tuple2<String,Integer>> sum = socketDS
@@ -41,6 +43,18 @@ public class SlotSharingGroupDemo {
                         }
                 )
                 .returns(Types.STRING)
+                /*
+                    默认组（未指定的 Source + FlatMap + Keyed Aggregation）：
+                        最大并行度 = 2（FlatMap 和 Keyed Aggregation 并行度都是 2）
+                        所以这个组需要 2 个 slot。
+                    "aaa" 组（Map）：
+                        并行度 = 2
+                        需要 2 个 slot（且是和默认组分开的）。
+                    合计 slot 数 = 2（默认组） + 2（"aaa" 组） = 4 个 slot
+                    但是本地启动只启动了俩个slot，所以程序一直不运行，过一会会报错没有最小的资源。
+                    想在本地运行的话可以设置本地启动的taskmanager slot数量 设置为4即可
+                    configuration.setInteger("taskmanager.numberOfTaskSlots", 4);
+                 */
                 .map(word -> Tuple2.of(word, 1)).slotSharingGroup("aaa")
                 .returns(Types.TUPLE(Types.STRING,Types.INT))
                 .keyBy(value -> value.f0)
