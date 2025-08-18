@@ -19,6 +19,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 public class SinkFile2 {
+    @Data(staticConstructor = "of")
+    @Accessors(chain = true)
+    private static class User {
+        private String name;
+        private int age;
+    }
+
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         env.setParallelism(2);
@@ -72,9 +79,3 @@ public class SinkFile2 {
 }
 
 
-@Data(staticConstructor = "of")
-@Accessors(chain = true)
-class User {
-    private String name;
-    private int age;
-}

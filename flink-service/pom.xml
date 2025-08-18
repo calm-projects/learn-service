@@ -147,6 +147,10 @@
             <optional>true</optional>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.parquet</groupId>
+                    <artifactId>parquet-column</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-client</artifactId>
                 </exclusion>
@@ -156,7 +160,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
 
     <repositories>
