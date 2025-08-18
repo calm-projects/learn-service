@@ -9,7 +9,6 @@ import org.apache.flink.configuration.MemorySize;
 import org.apache.flink.connector.file.sink.FileSink;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.CheckpointingMode;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
@@ -22,18 +21,19 @@ import java.time.Duration;
 public class SinkFile2 {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
-        env.setParallelism(1);
+        env.setParallelism(2);
 
         /*
-            batch模式
+            1 batch模式
             DataStreamSource<User> userDs = env.fromElements(
                     User.of().setName("jack").setAge(18),
                     User.of().setName("tom").setAge(8),
                     User.of().setName("rose").setAge(18));
          */
 
+        // 2 stream 模式
         // stream 模式下必须开启checkpoint 否则文件一直处于pending状态 无法转为finished状态
-        env.enableCheckpointing(10*1000, CheckpointingMode.EXACTLY_ONCE);
+        env.enableCheckpointing(10 * 1000, CheckpointingMode.EXACTLY_ONCE);
         SingleOutputStreamOperator<User> userDs = env.socketTextStream("hadoop03", 8888)
                 .map((MapFunction<String, User>) value -> {
                     String[] split = value.split(",");
