@@ -1,6 +1,5 @@
 package com.atguigu.source;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,7 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -78,6 +78,19 @@ public class KafkaSource_learn {
 
           消费数据(测试控制台和代码都可以看一看)
           kafka-console-consumer.sh --bootstrap-server hadoop03:9092 --topic orders --from-beginning
+
+
+        flink提交命令相关
+        这里这样设置jm和tm内存是因为我的yarn最小和最大内存分别为512 和 1024，jm和tm设置太大了会报错内存不够用，设置-p间接测试了下代码里面设置的并行度比命令行优先级要高
+        还有命令行最好按照这个顺序写
+        flink run-application -t yarn-application -d -Djobmanager.memory.process.size=1024m -Dtaskmanager.memory.process.size=1024m -Dclassloader.resolve-order=parent-first -p 1 -c com.learn.java.source.KafkaSource_learn flink-test-1.0-SNAPSHOT.jar
+        yarn logs -applicationId application_1755652974479_0008
+        flink stop --savepointPath hdfs://hadoop01:8020/flink/savepoint a75af58cf25f40df006fcfc3119ad548
+        flink run-application -t yarn-application -d -Djobmanager.memory.process.size=1024m -Dtaskmanager.memory.process.size=1024m -Dclassloader.resolve-order=parent-first -s hdfs://hadoop01:8020/flink/chk/c97913ff0cf4a8dc1570f40632cb5e4d/chk-50 -p 1 -c com.learn.java.source.KafkaSource_learn flink-test-1.0-SNAPSHOT.jar
+
+        报错解决：
+        Caused by: java.lang.ClassCastException: cannot assign instance of org.apache.kafka.clients.consumer.OffsetResetStrategy to field org.apache.flink.connector.kafka.source.enumerator.initializer.ReaderHandledOffsetsInitializer.offsetResetStrategy of type org.apache.kafka.clients.consumer.OffsetResetStrategy in instance of org.apache.flink.connector.kafka.source.enumerator.initializer.ReaderHandledOffsetsInitializer
+        flink运行命令添加 -Dclassloader.resolve-order=parent-first
          */
 
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
@@ -94,9 +107,42 @@ public class KafkaSource_learn {
         KafkaSource<String> source = KafkaSource.<String>builder()
                 .setBootstrapServers("hadoop02:9092,hadoop03:9092")
                 .setTopics("orders")
-                .setGroupId("group06")
-                 .setStartingOffsets(OffsetsInitializer.earliest())
-//                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST))
+                .setGroupId("group08")
+                /*
+                    TODO 简单介绍下重启如何读取偏移量信息的
+                    1 存在checkpoint 应用重启
+                    1.1 指定-s checkpoint路径 并且设置偏移量为：setStartingOffsets(OffsetsInitializer.earliest())
+                        会读取checkpoint中消费的offsets继续消费数据
+                    1.2 不指定-s checkpoint路径 并且设置偏移量为：setStartingOffsets(OffsetsInitializer.earliest())
+                        会重新开始消费数据
+
+                    1.3 不指定-s checkpoint路径 并且设置偏移量为：OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST)
+                        从kafka中消费数据
+                    1.4 指定-s checkpoint路径 并且设置偏移量为：OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST)
+                        从checkpoint存储的偏移量开始消费数据，这个是验证过的，验证过程如下（除了指定-s其余都可以本地）：
+                        step1：部署application到yarn，然后cancel(pro 请使用优雅的停止stop命令)，拿到一个checkpoint
+                        step2: 本地启动application，再往kafka写一条数据，这时候kafka的offsets比checkpoint的offsets多消费一条数据,kafka存储的offsets如下
+                            [hadoop@hadoop03 ~]$ kafka-consumer-groups.sh --bootstrap-server hadoop03:9092 --group group08 --describe
+
+                            Consumer group 'group08' has no active members.
+
+                            GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+                            group08         orders          0          9               9               0               -               -               -
+                            group08         orders          1          0               0               0               -               -               -
+                        step3：再次部署application到yarn，指定-s 保存点为checkpoint的路径，观察是否消费9这条数据 确实重新消费了，所以是读取的checkpoint
+
+
+                    2 不存在checkpoint 应用重启
+                    2.1 不设置 .setProperty("enable.auto.commit", "true") 和 .setProperty("auto.commit.interval.ms", "3")
+                        无论是OffsetsInitializer.earliest()还是OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST)
+                        都无法根据消费的offsets消费数据，因为根本不会记录消费信息到kafka
+                    2.2 设置 .setProperty("enable.auto.commit", "true") 和 .setProperty("auto.commit.interval.ms", "3")
+                        设置偏移量为：OffsetsInitializer.earliest()，还是从earliest开始消费
+                        设置偏移量为: KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class) 则会读取kafka 消费组的消费偏移量消费消费数据
+
+                 */
+//                .setStartingOffsets(OffsetsInitializer.earliest())
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST))
                 // .setDeserializer(KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
                 // 仅仅反序列化value，其他的会被忽略
                 .setValueOnlyDeserializer(new SimpleStringSchema())
@@ -107,7 +153,7 @@ public class KafkaSource_learn {
                 .setProperty("partition.discovery.interval.ms", "10000")
                 /*
                     默认true 默认5秒
-                    TODO ***开启checkpoint后会往kafka写消费信息****，且使用的是flink指定的groupId
+                    TODO ***开启checkpoint后不需要设置下面配置也会往kafka写消费信息****，且使用的是flink指定的groupId
                     TODO 不开启checkpoint 且不设置下面俩个配置，默认不往kafka提交偏移量,而且kafka查询不到消费者组，消费者组直接以
                         console-consumer-xxxx 启动的 无论偏移量设置为
                         setStartingOffsets(OffsetsInitializer.earliest())
@@ -115,8 +161,8 @@ public class KafkaSource_learn {
                         OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST)
                         都不会往kafka写消费信息，除非开启了下面的这俩个配置
                  */
-                //.setProperty("enable.auto.commit", "true")
-                //.setProperty("auto.commit.interval.ms", "3")
+                .setProperty("enable.auto.commit", "true")
+                .setProperty("auto.commit.interval.ms", "3")
                 .build();
 
         /*
@@ -137,7 +183,7 @@ public class KafkaSource_learn {
                                 try {
                                     Orders orders = objectMapper.readValue(element, Orders.class);
                                     return orders.getOrderTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-                                } catch (JsonProcessingException e) {
+                                } catch (IOException e) {
                                     /*
                                         一般不会报错，报错可以直接抛出异常,也可以设置最小时间，不影响 watermark，最好不要设置当前时间
                                         还可以设置标志位，然后过滤处理，
