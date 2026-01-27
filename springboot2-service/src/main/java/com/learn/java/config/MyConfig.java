@@ -15,6 +15,10 @@ proxyBeanMethods :
         默认值为true，允许通过配置类内的`直接方法调用`以及外部调用该配置的@Bean方法进行“bean间引用”。如果不需要这样做，因为每个特定配置
     的@Bean方法都是自包含的(“自包含”指的是这些方法不依赖于其他通过@Bean定义的Spring管理的bean，或者它们不依赖于Spring配置类所提供的特定
     上下文或状态。比如下面的user不依赖Animal)，并且设计为容器使用的普通工厂方法，请将此标志切换为false，以避免CGLIB子类处理。
+### Full模式（proxyBeanMethods = true）
+Spring容器启动->创建AppConfig的CGLIB代理类-> 拦截所有@Bean方法调用-> 检查容器中是否已有该Bean-> 有返回容器中的单例\无执行方法并注册到容器
+### Lite模式（proxyBeanMethods = false）
+Spring容器启动 ->  AppConfig就是普通Java类（无代理）-> @Bean方法直接执行 -> 方法间调用就是普通Java方法调用
  */
 @Configuration(proxyBeanMethods = false)
 // 注入的是User(name=null)

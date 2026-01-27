@@ -20,7 +20,10 @@ public class ExecuteServiceTest {
             说明调用了shutdown之后正在执行的任务还是运行的
          */
         ExecutorService executorService = runTask(5);
-        executorService.shutdown();
+        System.out.println(executorService.isShutdown());
+        System.out.println(executorService.isTerminated());
+        TimeUnit.SECONDS.sleep(2);
+        executorService.shutdownNow();
         System.out.println(executorService.isShutdown());
         System.out.println(executorService.isTerminated());
         TimeUnit.SECONDS.sleep(10);
@@ -36,7 +39,7 @@ public class ExecuteServiceTest {
                 System.out.println("结束执行...");
             } catch (InterruptedException e) {
                 System.out.println("中断异常" + e);
-                // throw new RuntimeException("sleep中断异常....");
+                throw new RuntimeException("sleep中断异常....");
             }
         });
         return executorService;
@@ -67,8 +70,8 @@ public class ExecuteServiceTest {
             System.out.println(executorService.isTerminated());
             if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
                 // 等待中断超时，尝试interrupt中断运行的任务，run可能会抛出InterruptException
-                List<Runnable> tasks = executorService.shutdownNow();
-                System.out.println("first shutdownNow 遗留 task:" + tasks.size());
+//                List<Runnable> tasks = executorService.shutdownNow();
+//                System.out.println("first shutdownNow 遗留 task:" + tasks.size());
                 if (!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
                     System.out.println("executorService 中断超时");
                 }
@@ -103,7 +106,7 @@ public class ExecuteServiceTest {
         Future<Result> future = executorService.submit(() -> {
             try {
                 System.out.println("开始执行...");
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(5);
                 result.setName("tom");
                 System.out.println("结束执行...");
             } catch (InterruptedException e) {
