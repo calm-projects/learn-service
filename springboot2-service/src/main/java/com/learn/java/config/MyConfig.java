@@ -19,6 +19,30 @@ proxyBeanMethods :
 Spring容器启动->创建AppConfig的CGLIB代理类-> 拦截所有@Bean方法调用-> 检查容器中是否已有该Bean-> 有返回容器中的单例\无执行方法并注册到容器
 ### Lite模式（proxyBeanMethods = false）
 Spring容器启动 ->  AppConfig就是普通Java类（无代理）-> @Bean方法直接执行 -> 方法间调用就是普通Java方法调用
+
+只要从容器中获取俩个都是单例的，返回true
+    System.out.println(context.getBean("user", User.class) == context.getBean("user", User.class));
+通过「配置类实例直接调用 @Bean 方法」时,full是同一个对象， lite每次都new一个对象，full是通过代理从BeanFactory里面获取的，lite就是调用的方法
+    代码1：
+    MyConfig myConfig = context.getBean(MyConfig.class);
+    User user1 = myConfig.user();
+    User user2 = myConfig.user();
+    代码2：其实本质还是方法调用，只要设计到方法调用一定会返回俩个不同的对象
+    @Configuration(proxyBeanMethods = false)
+    class BadConfig {
+        @Bean
+        A a() {
+            return new A();
+        }
+        @Bean
+        B b() {
+            return new B(a()); // ❌ 会 new 两个 A
+        }
+    }
+ 为什么好多底层都写proxyBeanMethods = false? 不是为了快，而是为了确定性
+    配置类本身就不需要 @Bean 之间的调用语义
+    被设计成“无状态 Bean 工厂”（不依赖乱七八糟的东西）
+    关闭代理可以减少启动期开销（但这是次要收益）
  */
 @Configuration(proxyBeanMethods = false)
 // 注入的是User(name=null)
